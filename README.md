@@ -1,6 +1,6 @@
 # MCP Plugin Template
 
-A GitHub template for packaging any MCP server as an installable Claude Code plugin. Zero dependencies — just Node.js.
+A GitHub template for packaging any MCP server as an installable plugin for GitHub Copilot in VS Code.
 
 ## For plugin authors
 
@@ -33,14 +33,37 @@ Share your repo — users install the plugin directly from the GitHub URL.
 
 > **Important:** The plugin is read from the repository's default branch. Make sure your changes are merged to `main`/`master` before distributing.
 
+## Try it yourself
+
+Want to test your plugin before sharing it? Here's how:
+
+1. **Fill in the placeholders** — follow [step 3 above](#3-fill-in-the-placeholders) to replace all `YOUR_` values with your own info.
+
+2. **Push to GitHub** — commit your changes and push the repo to GitHub. Make sure it's on your default branch (`main` or `master`).
+
+3. **Install your own plugin** — open the VS Code command palette (`F1` or `Ctrl+Shift+P`), select **"Chat: Install Plugin from Source"**, and paste your repo URL:
+   ```
+   https://github.com/YOUR_USERNAME/YOUR_REPO
+   ```
+   Hit enter and the plugin is installed.
+
+4. **Test it** — ask GitHub Copilot:
+   > Test the connection with my-plugin-name
+
+   Copilot should call the `hello` tool and return:
+   > "Hello from your MCP plugin!"
+
+   Replace `my-plugin-name` with whatever you set `YOUR_PLUGIN_NAME` to.
+
+If that works, your plugin is wired up correctly and ready to distribute.
+
 ## For users installing a plugin built from this template
 
-**VS Code:** Type `/plugins` in the Claude Code prompt box, then add the plugin's GitHub repo URL.
+1. Open the VS Code command palette (`F1` or `Ctrl+Shift+P`)
+2. Select **"Chat: Install Plugin from Source"**
+3. Paste the plugin's GitHub repo URL (e.g. `https://github.com/AUTHOR/REPO`) and hit enter
 
-**CLI:**
-```bash
-claude plugin add https://github.com/AUTHOR/REPO
-```
+That's it — GitHub Copilot can now access the plugin's tools.
 
 ## How it works
 
