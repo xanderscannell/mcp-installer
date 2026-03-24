@@ -1,8 +1,11 @@
 {
   "mcpServers": {
     "YOUR_PLUGIN_NAME": {
-      "command": "node",
-      "args": ["${CLAUDE_PLUGIN_ROOT}/server/index.js"]
+      "command": "python3",
+      "args": ["${CLAUDE_PLUGIN_ROOT}/server/server.py"],
+      "env": {
+        "PYTHONPATH": "${CLAUDE_PLUGIN_DATA}/python_modules"
+      }
     }
   }
 }
