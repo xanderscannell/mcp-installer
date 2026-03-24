@@ -12,7 +12,7 @@ Click **"Use this template"** on GitHub to create your own repo.
 
 Edit `server/index.js` — add tools and resources to the objects at the top of the file. The included server implements the MCP protocol directly with no dependencies.
 
-If you need npm packages, add them to `package.json` and see [Adding dependencies](#adding-dependencies) below.
+If you need npm packages, just add them to `package.json` — the dependency workflow is already configured. A `SessionStart` hook in `hooks/hooks.json` auto-installs packages, and `.mcp.json` sets `NODE_PATH` so your server can find them.
 
 ### 3. Fill in the placeholders
 
@@ -71,10 +71,12 @@ That's it — GitHub Copilot can now access the plugin's tools.
 your-plugin/
 ├── .claude-plugin/
 │   └── plugin.json       # Plugin metadata
-├── .mcp.json             # MCP server declaration
+├── .mcp.json             # MCP server declaration (with NODE_PATH)
+├── hooks/
+│   └── hooks.json        # Auto-installs npm deps on session start
 ├── server/
 │   └── index.js          # Your MCP server (edit this)
-├── package.json          # Plugin metadata
+├── package.json          # Plugin metadata + dependencies
 └── README.md
 ```
 
@@ -82,42 +84,11 @@ your-plugin/
 - The server implements the MCP protocol (JSON-RPC over stdio) with no external dependencies
 - `${CLAUDE_PLUGIN_ROOT}` points to the plugin's install directory
 
-## Adding dependencies
+## How dependencies work
 
-If your server needs npm packages:
+This template comes with npm dependency support pre-configured. Just add packages to `package.json` and they'll be available in your server.
 
-1. Add them to `package.json`
-2. Create `hooks/hooks.json` with a `SessionStart` hook to auto-install them:
+- **`hooks/hooks.json`** — A `SessionStart` hook compares `package.json` against a cached copy. If it's changed (or missing), it runs `npm install --production` in the plugin's data directory.
+- **`.mcp.json`** — Sets `NODE_PATH` to the data directory's `node_modules`, so `require()` calls in your server resolve correctly.
 
-```json
-{
-  "hooks": {
-    "SessionStart": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "diff -q \"${CLAUDE_PLUGIN_ROOT}/package.json\" \"${CLAUDE_PLUGIN_DATA}/package.json\" >/dev/null 2>&1 || (cd \"${CLAUDE_PLUGIN_DATA}\" && cp \"${CLAUDE_PLUGIN_ROOT}/package.json\" . && npm install --production) || rm -f \"${CLAUDE_PLUGIN_DATA}/package.json\""
-          }
-        ]
-      }
-    ]
-  }
-}
-```
-
-3. Add `NODE_PATH` to `.mcp.json` so your server can find the installed modules:
-
-```json
-{
-  "mcpServers": {
-    "your-plugin": {
-      "command": "node",
-      "args": ["${CLAUDE_PLUGIN_ROOT}/server/index.js"],
-      "env": {
-        "NODE_PATH": "${CLAUDE_PLUGIN_DATA}/node_modules"
-      }
-    }
-  }
-}
-```
+No manual setup needed — just `npm install <package>` (or edit `package.json` directly) and your server can `require()` it.
